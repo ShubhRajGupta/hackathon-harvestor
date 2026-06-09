@@ -1,0 +1,70 @@
+I will read the `.env` file to see if the Gemini API Key or MongoDB URI has been configured.
+
+Viewed .env:1-14
+
+I will run the API diagnostic script `test/test_api.py` using the `run_command` tool to see if the Gemini API can make the search request successfully with your API key, or if there is an error (e.g., rate limit, invalid key, or timeout).
+
+Ran command: `python test/test_api.py`
+
+I will check the status of the diagnostic command to read its output.
+
+I will run the API test using the virtual environment's Python interpreter to ensure all dependencies are loaded correctly.
+
+Ran command: `.\venv\Scripts\python.exe test/test_api.py`
+
+I will wait and check the status of the API diagnostic script.
+
+I will run the command again with the `PYTHONIOENCODING=utf-8` environment variable enabled so that Python can output emojis to the Windows terminal without throwing a `UnicodeEncodeError`.
+
+Ran command: `$env:PYTHONIOENCODING="utf-8"; .\venv\Scripts\python.exe test/test_api.py`
+
+I will wait and check the status of the command to capture the test results.
+
+I will check the command status again to see if the API call has completed.
+
+I will run a command to ping the local MongoDB server to check if it is active.
+
+Ran command: `.\venv\Scripts\python.exe -c "from pymongo import MongoClient; client = MongoClient('mongodb://localhost:27017/', serverSelectionTimeoutMS=2000); print(client.admin.command('ping'))"`
+
+I will check if the MongoDB server ping succeeded.
+
+I ran two diagnostic checks to figure out why no hackathons are appearing:
+
+1. **Gemini API Check**: The connection to the Gemini API is working and successfully retrieving live hackathon data.
+2. **MongoDB Database Check**: The ping to `mongodb://localhost:27017/` timed out. **Your local MongoDB database is not running (or not installed).** 
+
+Because the database is offline, the scraper cannot save new events, and the web interface cannot display anything.
+
+---
+
+### How to Fix This
+
+You have two choices to get your database running:
+
+#### Option A: Start your local MongoDB service (If installed)
+If you have MongoDB installed locally on your Windows machine, open PowerShell as an **Administrator** and start it:
+```powershell
+Start-Service -Name MongoDB
+```
+*(Alternatively, run `net start MongoDB` or run `mongod` in a separate command window).*
+
+#### Option B: Use MongoDB Atlas (Cloud - Recommended & Easiest)
+If you don't have MongoDB installed locally, you can use a free cloud database:
+1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas) and sign up for a free account.
+2. Create a free M0 cluster.
+3. In the Database Access settings, create a database user (e.g., username `admin` and a password).
+4. In Network Access, allow access from anywhere (`0.0.0.0/0`) or add your current IP address.
+5. Click **Connect** -> **Drivers** to get your connection string.
+6. Open your [.env](file:///x:/Projects/harvester/hackathon-harvestor/.env) file and replace the `MONGODB_URI` with your connection string:
+   ```env
+   MONGODB_URI=mongodb+srv://admin:<password>@cluster0.xxxx.mongodb.net/
+   ```
+   *(Be sure to replace `<password>` with your database user password).*
+
+---
+
+Once the database is online, restart the application:
+```powershell
+python test/run.py
+```
+It will automatically trigger an initial scrape on startup, populate your database with active hackathons, and display them on the dashboard.

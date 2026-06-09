@@ -9,6 +9,9 @@ import sys
 import subprocess
 from pathlib import Path
 
+# Add project root directory to sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def check_python_version():
     """Check if Python version is 3.8 or higher."""
     if sys.version_info < (3, 8):
@@ -30,18 +33,19 @@ def check_virtual_environment():
 
 def check_dependencies():
     """Check if required dependencies are installed."""
-    required_packages = [
-        'flask',
-        'pymongo',
-        'python-dotenv',
-        'llama-index',
-        'google-generativeai'
-    ]
+    import importlib
+    required_packages = {
+        'flask': 'flask',
+        'pymongo': 'pymongo',
+        'python-dotenv': 'dotenv',
+        'llama-index': 'llama_index',
+        'google-generativeai': 'google.generativeai'
+    }
     
     missing_packages = []
-    for package in required_packages:
+    for package, import_name in required_packages.items():
         try:
-            __import__(package.replace('-', '_'))
+            importlib.import_module(import_name)
         except ImportError:
             missing_packages.append(package)
     
