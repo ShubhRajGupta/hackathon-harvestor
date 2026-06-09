@@ -1,4 +1,4 @@
-# 🧠 System Logics & Execution Workflow
+# System Logics & Execution Workflow
 
 This document explains the step-by-step logic of how the Hackathon Harvester runs, fetches data, sanitizes it, and serves it to the user.
 
